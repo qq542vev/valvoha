@@ -2,7 +2,7 @@
 
 ### File: makefile
 ##
-## ファイルの作成・変換を行う。
+## zbasu lo lojbo valsi voksa vreji
 ##
 ## Usage:
 ##
@@ -16,22 +16,22 @@
 ##   author - <qq542vev at https://purl.org/meta/me/>
 ##   version - 1.0.0
 ##   created - 2025-06-08
-##   modified - 2025-06-10
+##   modified - 2025-06-11
 ##   copyright - Copyright (C) 2025-2025 qq542vev. All rights reserved.
 ##   license - <GNU GPLv3 at https://www.gnu.org/licenses/gpl-3.0.txt>
-##   depends - awkl, echo, espeak-ng
+##   depends - awk, curl, echo, espeak-ng, xmlstarlet
 ##
 ## See Also:
 ##
-##   * <Project homepage at https://purl.org/auc/>
-##   * <Bag report at https://purl.org/auc/issues>
+##   * <Project homepage at https://github.com/qq542vev/voksa>
+##   * <Bag report at https://github.com/qq542vev/voksa/issues>
 
 # Sp Targets
 # ==========
 
 .POSIX:
 
-.PHONY: all mkfile FORCE espeak-ng espeak-ng_jicmu-gismu mk-template help version
+.PHONY: all mkfile FORCE update espeak-ng espeak-ng_jicmu-gismu mk-template help version
 
 .SILENT: mk-template help version
 
@@ -40,7 +40,10 @@
 
 VERSION = 1.0.0
 
-MAKEFILE = espeak-ng_jicmu-gismu.mk espeak-ng_cipra-gismu.mk 
+MAKEFILE = espeak-ng_jicmu-gismu.mk espeak-ng_cipra-gismu.mk
+LISTFILE = liste/jicmu-gismu.txt liste/cipra-gismu.txt
+EXPORT_URL = https://github.com/qq542vev/jvs_ja/raw/refs/heads/zmiku/xml-export-en.html.xml
+EXPORT_XPATH = /dictionary/direction/valsi[@word]
 
 # Build
 # =====
@@ -51,6 +54,20 @@ mkfile: $(MAKEFILE)
 
 FORCE:
 
+# liste
+# =====
+
+update: $(LISTFILE)
+
+liste/jicmu-gismu.txt: liste FORCE
+	curl -sSfL -- '$(EXPORT_URL)' | xmlstarlet sel --net -t -m '$(EXPORT_XPATH)[@type="gismu"]' -v '@word' -n >$(@)
+
+liste/cipra-gismu.txt: liste FORCE
+	curl -sSfL -- '$(EXPORT_URL)' | xmlstarlet sel --net -t -m '$(EXPORT_XPATH)[@type="experimental gismu"]' -v '@word' -n >$(@)
+
+liste:
+	mkdir -p -- '$(@)'
+
 # espeak-ng
 # ---------
 
@@ -59,14 +76,17 @@ espeak-ng: espeak-ng_jicmu-gismu espeak-ng_cipra-gismu
 espeak-ng_jicmu-gismu: espeak-ng_jicmu-gismu.mk FORCE
 	make -f '$(<)'
 
-espeak-ng_jicmu-gismu.mk:
+espeak-ng_jicmu-gismu.mk: liste/jicmu-gismu.txt
 	make INOUT='<liste/jicmu-gismu.txt >$(@)' DIR='espeak-ng/jicmu-gismu' CMD='ESPEAK' mk-template
 
 espeak-ng_cipra-gismu: espeak-ng_cipra-gismu.mk FORCE
 	make -f '$(<)'
 
-espeak-ng_cipra-gismu.mk:
+espeak-ng_cipra-gismu.mk: liste/cipra-gismu.txt
 	make INOUT='<liste/cipra-gismu.txt >$(@)' DIR='espeak-ng/cipra-gismu' CMD='ESPEAK' mk-template
+
+# Clean
+# =====
 
 clean:
 	rm -rf -- $(MAKEFILE) espeak-ng
@@ -136,19 +156,26 @@ mk-template:
 # =======
 
 help:
-	echo 'zbasu la files.'
+	echo "zbasu lo lojbo valsi voksa vreji"
 	echo
-	echo 'USAGE:'
-	echo '  make [OPTION...] [MACRO=VALUE...] [TARGET...]'
+	echo "USAGE:"
+	echo "  make [OPTION...] [MACRO=VALUE...] [TARGET...]"
 	echo
-	echo 'MACRO:'
-	echo '  ESPEAK jufra co minde la espeak.ng.'
+	echo "MACRO:"
+	echo "  ESPEAK jufra co minde la espeak.ng."
 	echo
-	echo 'TARGET:'
-	echo '  all     zbasu ro da'
-	echo '  mkfile  zbasu ro la makefiles.'
-	echo '  clean   vimcu lo se zbasu'
-	echo '  rebuild ba lo nu zukte la clean cu zukte la all'
+	echo "TARGET:"
+	echo "  all     zbasu ro da"
+	echo "  mkfile  zbasu ro la makefiles."
+	echo "  espeak-ng"
+	echo "          zbasu ro da sepi'o la espeak.ng"
+	echo "  espeak-ng_jicmu-gismu"
+	echo "          zbasu ro tu'a lo jicmu gismu sepi'o la espeak.ng"
+	echo "  espeak-ng_cipra-gismu"
+	echo "          zbasu ro tu'a lo cipra gismu sepi'o la espeak.ng"
+	echo "  update  cnino gasnu lo liste"
+	echo "  clean   vimcu lo se zbasu"
+	echo "  rebuild ba lo nu zukte la clean cu zukte la all"
 	echo "  help    jarco tu'a le sidju jufra"
 	echo "  version jarco tu'a le ve farvi namcu"
 
