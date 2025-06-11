@@ -23,8 +23,8 @@
 ##
 ## See Also:
 ##
-##   * <Project homepage at https://github.com/qq542vev/voksa>
-##   * <Bag report at https://github.com/qq542vev/voksa/issues>
+##   * <Project homepage at https://github.com/qq542vev/jbovoha>
+##   * <Bag report at https://github.com/qq542vev/jbovoha/issues>
 
 # Sp Targets
 # ==========
@@ -44,6 +44,7 @@ MAKEFILE = espeak-ng_jicmu-gismu.mk espeak-ng_cipra-gismu.mk
 LISTFILE = liste/jicmu-gismu.txt liste/cipra-gismu.txt
 EXPORT_URL = https://github.com/qq542vev/jvs_ja/raw/refs/heads/zmiku/xml-export-en.html.xml
 EXPORT_XPATH = /dictionary/direction/valsi[@word]
+CURL = curl -sSfL -- '$(EXPORT_URL)'
 
 # Build
 # =====
@@ -54,20 +55,6 @@ mkfile: $(MAKEFILE)
 
 FORCE:
 
-# liste
-# =====
-
-update: $(LISTFILE)
-
-liste/jicmu-gismu.txt: liste FORCE
-	curl -sSfL -- '$(EXPORT_URL)' | xmlstarlet sel --net -t -m '$(EXPORT_XPATH)[@type="gismu"]' -v '@word' -n >$(@)
-
-liste/cipra-gismu.txt: liste FORCE
-	curl -sSfL -- '$(EXPORT_URL)' | xmlstarlet sel --net -t -m '$(EXPORT_XPATH)[@type="experimental gismu"]' -v '@word' -n >$(@)
-
-liste:
-	mkdir -p -- '$(@)'
-
 # espeak-ng
 # ---------
 
@@ -77,13 +64,27 @@ espeak-ng_jicmu-gismu: espeak-ng_jicmu-gismu.mk FORCE
 	make -f '$(<)'
 
 espeak-ng_jicmu-gismu.mk: liste/jicmu-gismu.txt
-	make INOUT='<liste/jicmu-gismu.txt >$(@)' DIR='espeak-ng/jicmu-gismu' CMD='ESPEAK' mk-template
+	make INOUT='<$(<) >$(@)' DIR='espeak-ng/$(<F:.txt=)' CMD='ESPEAK' mk-template
 
 espeak-ng_cipra-gismu: espeak-ng_cipra-gismu.mk FORCE
 	make -f '$(<)'
 
 espeak-ng_cipra-gismu.mk: liste/cipra-gismu.txt
-	make INOUT='<liste/cipra-gismu.txt >$(@)' DIR='espeak-ng/cipra-gismu' CMD='ESPEAK' mk-template
+	make INOUT='<$(<) >$(@)' DIR='espeak-ng/$(<F:.txt=)' CMD='ESPEAK' mk-template
+
+# List
+# ----
+
+list: $(LISTFILE)
+
+liste/jicmu-gismu.txt: liste
+	$(CURL) | xmlstarlet sel -t -m '$(EXPORT_XPATH)[@type="gismu"]' -v '@word' -n >$(@)
+
+liste/cipra-gismu.txt: liste
+	$(CURL) | xmlstarlet sel -t -m '$(EXPORT_XPATH)[@type="experimental gismu"]' -v '@word' -n >$(@)
+
+liste:
+	mkdir -p -- '$(@)'
 
 # Clean
 # =====
@@ -100,7 +101,7 @@ mk-template:
 	awk -- ' \
 		BEGIN { \
 			if(!("ESPEAK" in ENVIRON)) { \
-				ENVIRON["ESPEAK"] = "espeak-ng -s 12 -v jbo+f5 -w \"_TEPUHE_\" \"_SEPUHE_\""; \
+				ENVIRON["ESPEAK"] = "espeak-ng -s 120 -v jbo+f5 -w \"_TEPUHE_\" \"_SEPUHE_\""; \
 			} \
 			if("CMD" in ENVIRON) { \
 				if(ENVIRON["CMD"] = "ESPEAK") { \
@@ -170,10 +171,10 @@ help:
 	echo "  espeak-ng"
 	echo "          zbasu ro da sepi'o la espeak.ng"
 	echo "  espeak-ng_jicmu-gismu"
-	echo "          zbasu ro tu'a lo jicmu gismu sepi'o la espeak.ng"
+	echo "          zbasu ro tu'a lo jicmu gismu sepi'o la espeak.ng."
 	echo "  espeak-ng_cipra-gismu"
-	echo "          zbasu ro tu'a lo cipra gismu sepi'o la espeak.ng"
-	echo "  update  cnino gasnu lo liste"
+	echo "          zbasu ro tu'a lo cipra gismu sepi'o la espeak.ng."
+	echo "  list    zbasu lo liste"
 	echo "  clean   vimcu lo se zbasu"
 	echo "  rebuild ba lo nu zukte la clean cu zukte la all"
 	echo "  help    jarco tu'a le sidju jufra"
