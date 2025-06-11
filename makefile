@@ -16,7 +16,7 @@
 ##   author - <qq542vev at https://purl.org/meta/me/>
 ##   version - 1.0.0
 ##   created - 2025-06-08
-##   modified - 2025-06-11
+##   modified - 2025-06-12
 ##   copyright - Copyright (C) 2025-2025 qq542vev. All rights reserved.
 ##   license - <GNU GPLv3 at https://www.gnu.org/licenses/gpl-3.0.txt>
 ##   depends - awk, curl, echo, espeak-ng, xmlstarlet
@@ -163,20 +163,20 @@ help:
 	echo "  make [OPTION...] [MACRO=VALUE...] [TARGET...]"
 	echo
 	echo "MACRO:"
-	echo "  ESPEAK jufra co minde la espeak.ng."
+	echo "  ESPEAK jufra co minde la'o gy. eSpeak NG gy."
 	echo
 	echo "TARGET:"
 	echo "  all     zbasu ro da"
-	echo "  mkfile  zbasu ro la makefiles."
+	echo "  mkfile  zbasu ro la'o gy. makefile gy."
 	echo "  espeak-ng"
-	echo "          zbasu ro da sepi'o la espeak.ng"
+	echo "          zbasu ro da sepi'o la'o gy. eSpeak NG gy."
 	echo "  espeak-ng_jicmu-gismu"
-	echo "          zbasu ro tu'a lo jicmu gismu sepi'o la espeak.ng."
+	echo "          zbasu ro tu'a lo jicmu gismu sepi'o la'o gy. eSpeak NG gy."
 	echo "  espeak-ng_cipra-gismu"
-	echo "          zbasu ro tu'a lo cipra gismu sepi'o la espeak.ng."
+	echo "          zbasu ro tu'a lo cipra gismu sepi'o la'o gy. eSpeak NG gy."
 	echo "  list    zbasu lo liste"
 	echo "  clean   vimcu lo se zbasu"
-	echo "  rebuild ba lo nu zukte la clean cu zukte la all"
+	echo "  rebuild ba lo nu zukte la'o gy. clean gy. cu zukte la'o gy. all gy."
 	echo "  help    jarco tu'a le sidju jufra"
 	echo "  version jarco tu'a le ve farvi namcu"
 

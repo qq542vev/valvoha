@@ -1,6 +1,6 @@
 ### File: Dockerfile
 ##
-## Dockerイメージを作成する。
+## zbasu lo doker zei morna
 ##
 ## Usage:
 ##
@@ -14,7 +14,7 @@
 ##   author - <qq542vev at https://purl.org/meta/me/>
 ##   version - 1.0.0
 ##   created - 2025-06-11
-##   modified - 2025-06-11
+##   modified - 2025-06-12
 ##   copyright - Copyright (C) 2025-2025 qq542vev. All rights reserved.
 ##   license - <GNU GPLv3 at https://www.gnu.org/licenses/gpl-3.0.txt>
 ##
