@@ -1,0 +1,9 @@
+#!/usr/bin/docker-compose -f
+
+name: lojbo valsi voksa vreji
+services:
+  make:
+    build: .
+    entrypoint: "make"
+    volumes:
+      - .:/work
