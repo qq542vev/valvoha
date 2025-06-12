@@ -19,7 +19,7 @@
 ##   modified - 2025-06-12
 ##   copyright - Copyright (C) 2025-2025 qq542vev. All rights reserved.
 ##   license - <GNU GPLv3 at https://www.gnu.org/licenses/gpl-3.0.txt>
-##   depends - awk, curl, echo, espeak-ng, xmlstarlet
+##   depends - awk, curl, echo, espeak-ng, xmlstarlet zip
 ##
 ## See Also:
 ##
@@ -31,7 +31,7 @@
 
 .POSIX:
 
-.PHONY: all mkfile FORCE update espeak-ng espeak-ng_jicmu-gismu mk-template help version
+.PHONY: all mkfile FORCE espeak-ng espeak-ng_jicmu-gismu list release clean rebuild mk-template help version
 
 .SILENT: mk-template help version
 
@@ -40,8 +40,9 @@
 
 VERSION = 1.0.0
 
-MAKEFILE = espeak-ng_jicmu-gismu.mk espeak-ng_cipra-gismu.mk
-LISTFILE = liste/jicmu-gismu.txt liste/cipra-gismu.txt
+MAKE_FILE = espeak-ng_jicmu-gismu.mk espeak-ng_cipra-gismu.mk
+LIST_FILE = liste/jicmu-gismu.txt liste/cipra-gismu.txt
+SPEAKER = espeak-ng
 EXPORT_URL = https://github.com/qq542vev/jvs_ja/raw/refs/heads/zmiku/xml-export-en.html.xml
 EXPORT_XPATH = /dictionary/direction/valsi[@word]
 CURL = curl -sSfL -- '$(EXPORT_URL)'
@@ -49,9 +50,9 @@ CURL = curl -sSfL -- '$(EXPORT_URL)'
 # Build
 # =====
 
-all: espeak-ng
+all: $(SPEAKER)
 
-mkfile: $(MAKEFILE)
+mkfile: $(MAKE_FILE)
 
 FORCE:
 
@@ -75,7 +76,7 @@ espeak-ng_cipra-gismu.mk: liste/cipra-gismu.txt
 # List
 # ----
 
-list: $(LISTFILE)
+list: $(LIST_FILE)
 
 liste/jicmu-gismu.txt: liste
 	$(CURL) | xmlstarlet sel -t -m '$(EXPORT_XPATH)[@type="gismu"]' -v '@word' -n >$(@)
@@ -86,11 +87,19 @@ liste/cipra-gismu.txt: liste
 liste:
 	mkdir -p -- '$(@)'
 
+# Release
+# =======
+
+release: $(SPEAKER:=.zip)
+
+espeak-ng.zip: espeak-ng
+	zip -9FSro '$(@)' -- '$(<)'
+
 # Clean
 # =====
 
 clean:
-	rm -rf -- $(MAKEFILE) espeak-ng
+	rm -rf -- $(MAKE_FILE) $(SPEAKER) $(SPEAKER:=.zip)
 
 rebuild: clean all
 
