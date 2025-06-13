@@ -16,7 +16,7 @@
 ##   author - <qq542vev at https://purl.org/meta/me/>
 ##   version - 1.0.0
 ##   created - 2025-06-08
-##   modified - 2025-06-12
+##   modified - 2025-06-13
 ##   copyright - Copyright (C) 2025-2025 qq542vev. All rights reserved.
 ##   license - <GNU GPLv3 at https://www.gnu.org/licenses/gpl-3.0.txt>
 ##   depends - awk, curl, echo, espeak-ng, xmlstarlet zip
@@ -31,9 +31,9 @@
 
 .POSIX:
 
-.PHONY: all mkfile FORCE espeak-ng espeak-ng_jicmu-gismu list release clean rebuild mk-template help version
+.PHONY: all espeak-ng espeak-ng_jicmu-gismu espeak-ng_cipra-gismu list release clean rebuild help version
 
-.SILENT: mk-template help version
+.SILENT: help version
 
 # Macro
 # =====
@@ -47,31 +47,33 @@ EXPORT_URL = https://github.com/qq542vev/jvs_ja/raw/refs/heads/zmiku/xml-export-
 EXPORT_XPATH = /dictionary/direction/valsi[@word]
 CURL = curl -sSfL -- '$(EXPORT_URL)'
 
+JICMU_GISMU != cat -- 'liste/jicmu-gismu.txt'
+CIPRA_GISMU != cat -- 'liste/cipra-gismu.txt'
+
+ESPEAK = espeak-ng -s 120 -v jbo+f5 -w "$(@)" "$(@F:.wav=)"
+
 # Build
 # =====
 
 all: $(SPEAKER)
-
-mkfile: $(MAKE_FILE)
-
-FORCE:
 
 # espeak-ng
 # ---------
 
 espeak-ng: espeak-ng_jicmu-gismu espeak-ng_cipra-gismu
 
-espeak-ng_jicmu-gismu: espeak-ng_jicmu-gismu.mk FORCE
-	make -f '$(<)'
+espeak-ng_jicmu-gismu: liste/jicmu-gismu.txt $(JICMU_GISMU:%=espeak-ng/jicmu-gismu/%.wav)
 
-espeak-ng_jicmu-gismu.mk: liste/jicmu-gismu.txt
-	make INOUT='<$(<) >$(@)' DIR='espeak-ng/$(<F:.txt=)' CMD='ESPEAK' mk-template
+$(JICMU_GISMU:%=espeak-ng/jicmu-gismu/%.wav): espeak-ng/jicmu-gismu
+	$(ESPEAK)
 
-espeak-ng_cipra-gismu: espeak-ng_cipra-gismu.mk FORCE
-	make -f '$(<)'
+espeak-ng_cipra-gismu: liste/cipra-gismu.txt $(CIPRA_GISMU:%=espeak-ng/cipra-gismu/%.wav)
 
-espeak-ng_cipra-gismu.mk: liste/cipra-gismu.txt
-	make INOUT='<$(<) >$(@)' DIR='espeak-ng/$(<F:.txt=)' CMD='ESPEAK' mk-template
+$(CIPRA_GISMU:%=espeak-ng/cipra-gismu/%.wav): espeak-ng/cipra-gismu
+	$(ESPEAK)
+
+espeak-ng/jicmu-gismu espeak-ng/cipra-gismu:
+	mkdir -p -- "$(@)"
 
 # List
 # ----
@@ -102,65 +104,6 @@ clean:
 	rm -rf -- $(MAKE_FILE) $(SPEAKER) $(SPEAKER:=.zip)
 
 rebuild: clean all
-
-# Template
-# ========
-
-mk-template:
-	awk -- ' \
-		BEGIN { \
-			if(!("ESPEAK" in ENVIRON)) { \
-				ENVIRON["ESPEAK"] = "espeak-ng -s 120 -v jbo+f5 -w \"_TEPUHE_\" \"_SEPUHE_\""; \
-			} \
-			if("CMD" in ENVIRON) { \
-				if(ENVIRON["CMD"] = "ESPEAK") { \
-					cmd = ENVIRON[ENVIRON["CMD"]]; \
-				} else { \
-					cmd = ENVIRON["CMD"]; \
-				} \
-			} \
-			dir = (("DIR" in ENVIRON) ? ENVIRON["DIR"] : "."); \
-			ext = (("EXT" in ENVIRON) ? ENVIRON["EXT"] : ".wav"); \
-			split("", valsi); \
-		} \
-		{ \
-			valsi[NR] = $$0; \
-		} \
-		END { \
-			print("#!/usr/bin/make -f"); \
-			print(""); \
-			print(".POSIX:"); \
-			print(""); \
-			print(".PHONY: all clean rebuild"); \
-			print(""); \
-			printf("DIR = %s\n", dir); \
-			printf("EXT = %s\n", ext); \
-			printf("FILES ="); \
-			for(i = 1; i <= NR; i++) { \
-				printf(" $$(DIR)/%s$$(EXT)", valsi[i]); \
-			} \
-			print(""); \
-			print("all: $$(FILES)"); \
-			for(i = 1; i <= NR; i++) { \
-				print(""); \
-				printf("$$(DIR)/%s$$(EXT): $$(DIR)\n", valsi[i]); \
-				if(cmd) { \
-					cmd_ = cmd; \
-					gsub("_SEPUHE_", "$$(@F:$$(EXT)=)", cmd_); \
-					gsub("_TEPUHE_", "$$(@)", cmd_); \
-					printf("\t%s\n", cmd_); \
-				} \
-			} \
-			print(""); \
-			print("$$(DIR):"); \
-			print("\tmkdir -p -- $$(@)"); \
-			print(""); \
-			print("clean:"); \
-			print("\trm -f -- $$(FILES)"); \
-			print(""); \
-			print("rebuild: clean all"); \
-		} \
-	' - $(INOUT)
 
 # Message
 # =======
