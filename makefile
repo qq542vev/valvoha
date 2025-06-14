@@ -52,7 +52,7 @@ MKDIR = mkdir -p -- '$(@D)'
 JICMU_GISMU != cat -- 'liste/jicmu-gismu.txt'
 CIPRA_GISMU != cat -- 'liste/cipra-gismu.txt'
 
-ESPEAK = espeak-ng -s 120 -v jbo+f5 -w "$(@)" "$(@F:.wav=)"
+ESPEAK = espeak-ng -p 60 -s 120 -v jbo+f5 -w "$(@)" "$(@F:.wav=)"
 LA_VITCI_VOKSA = \
 	curl() { command curl -sSfL "$${@}" && sleep 1; } && \
 	url='https://lojban-text-to-speech.hf.space/call/cupra' && \
