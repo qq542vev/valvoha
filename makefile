@@ -31,7 +31,7 @@
 
 .POSIX:
 
-.PHONY: all espeak-ng espeak-ng_jicmu-gismu espeak-ng_cipra-gismu list release clean rebuild help version
+.PHONY: all espeak-ng $(ESPEAK_TGT) la-vitci-voksa $(VITVOHA_TGT) list release clean rebuild help version
 
 .SILENT: help version
 
@@ -40,17 +40,35 @@
 
 VERSION = 1.0.0
 
-MAKE_FILE = espeak-ng_jicmu-gismu.mk espeak-ng_cipra-gismu.mk
-LIST_FILE = liste/jicmu-gismu.txt liste/cipra-gismu.txt
-SPEAKER = espeak-ng
-EXPORT_URL = https://github.com/qq542vev/jvs_ja/raw/refs/heads/zmiku/xml-export-en.html.xml
+TYPE = jicmu-gismu cipra-gismu
+ESPEAK_TGT = $(TYPE:%=espeak-ng_%)
+VITVOHA_TGT = $(TYPE:%=la-vitci-voksa_%)
+
+SPEAKER = espeak-ng la-vitci-voksa
 EXPORT_XPATH = /dictionary/direction/valsi[@word]
-CURL = curl -sSfL -- '$(EXPORT_URL)'
+EXPORT_VLASTE = curl -sSfL -- 'https://github.com/qq542vev/jvs_ja/raw/refs/heads/zmiku/xml-export-en.html.xml'
+MKDIR = mkdir -p -- '$(@D)'
 
 JICMU_GISMU != cat -- 'liste/jicmu-gismu.txt'
 CIPRA_GISMU != cat -- 'liste/cipra-gismu.txt'
 
 ESPEAK = espeak-ng -s 120 -v jbo+f5 -w "$(@)" "$(@F:.wav=)"
+LA_VITCI_VOKSA = \
+	curl() { command curl -sSfL "$${@}" && sleep 1; } && \
+	url='https://lojban-text-to-speech.hf.space/call/cupra' && \
+	id=$$( \
+		curl \
+			-X 'POST' -H 'Content-Type: application/json' \
+			-d '{"data": ["$(@F:.wav=)", "Lojban", 0, 0, 1.5, "LJS", "wav"]}' \
+			-- "$${url}" | \
+		jq -r '.event_id' \
+	) && \
+	audio=$$( \
+		curl -- "$${url}/$${id}" | \
+		awk -- 'match($$0, "^data: *") { print(substr($$0, RLENGTH + 1)); exit; }' | \
+		jq -r 'to_entries | .[1].value.url' \
+	) && \
+	curl -o "$(@)" -- "$${audio}"
 
 # Build
 # =====
@@ -60,34 +78,41 @@ all: $(SPEAKER)
 # espeak-ng
 # ---------
 
-espeak-ng: espeak-ng_jicmu-gismu espeak-ng_cipra-gismu
+espeak-ng: $(ESPEAK_TGT)
 
 espeak-ng_jicmu-gismu: liste/jicmu-gismu.txt $(JICMU_GISMU:%=espeak-ng/jicmu-gismu/%.wav)
 
-$(JICMU_GISMU:%=espeak-ng/jicmu-gismu/%.wav): espeak-ng/jicmu-gismu
-	$(ESPEAK)
-
 espeak-ng_cipra-gismu: liste/cipra-gismu.txt $(CIPRA_GISMU:%=espeak-ng/cipra-gismu/%.wav)
 
-$(CIPRA_GISMU:%=espeak-ng/cipra-gismu/%.wav): espeak-ng/cipra-gismu
+$(JICMU_GISMU:%=espeak-ng/jicmu-gismu/%.wav) $(CIPRA_GISMU:%=espeak-ng/cipra-gismu/%.wav):
+	$(MKDIR)
 	$(ESPEAK)
 
-espeak-ng/jicmu-gismu espeak-ng/cipra-gismu:
-	mkdir -p -- "$(@)"
+# la vitci voksa
+# ------------------
+
+la-vitci-voksa: $(VITVOHA_TGT)
+
+la-vitci-voksa_jicmu-gismu: liste/jicmu-gismu.txt $(JICMU_GISMU:%=la-vitci-voksa/jicmu-gismu/%.wav)
+
+la-vitci-voksa_cipra-gismu: liste/cipra-gismu.txt $(CIPRA_GISMU:%=la-vitci-voksa/cipra-gismu/%.wav)
+
+$(JICMU_GISMU:%=la-vitci-voksa/jicmu-gismu/%.wav) $(CIPRA_GISMU:%=la-vitci-voksa/cipra-gismu/%.wav):
+	$(MKDIR)
+	$(LA_VITCI_VOKSA)
 
 # List
 # ----
 
-list: $(LIST_FILE)
+list: $(TYPE:%=liste/%.txt)
 
-liste/jicmu-gismu.txt: liste
-	$(CURL) | xmlstarlet sel -t -m '$(EXPORT_XPATH)[@type="gismu"]' -v '@word' -n >$(@)
+liste/jicmu-gismu.txt:
+	$(MKDIR)
+	$(EXPORT_VLASTE) | xmlstarlet sel -t -m '$(EXPORT_XPATH)[@type="gismu"]' -v '@word' -n >'$(@)'
 
-liste/cipra-gismu.txt: liste
-	$(CURL) | xmlstarlet sel -t -m '$(EXPORT_XPATH)[@type="experimental gismu"]' -v '@word' -n >$(@)
-
-liste:
-	mkdir -p -- '$(@)'
+liste/cipra-gismu.txt:
+	$(MKDIR)
+	$(EXPORT_VLASTE) | xmlstarlet sel -t -m '$(EXPORT_XPATH)[@type="experimental gismu"]' -v '@word' -n >'$(@)'
 
 # Release
 # =======
@@ -97,11 +122,14 @@ release: $(SPEAKER:=.zip)
 espeak-ng.zip: espeak-ng
 	zip -9FSro '$(@)' -- '$(<)'
 
+la-vitci-voksa.zip: la-vitci-voksa
+	zip -9FSro '$(@)' -- '$(<)'
+
 # Clean
 # =====
 
 clean:
-	rm -rf -- $(MAKE_FILE) $(SPEAKER) $(SPEAKER:=.zip)
+	rm -rf -- $(SPEAKER) $(SPEAKER:=.zip)
 
 rebuild: clean all
 
@@ -115,17 +143,23 @@ help:
 	echo "  make [OPTION...] [MACRO=VALUE...] [TARGET...]"
 	echo
 	echo "MACRO:"
-	echo "  ESPEAK jufra co minde la'o gy. eSpeak NG gy."
+	echo "  ESPEAK         jufra co minde la'o gy. eSpeak NG gy."
+	echo "  LA_VITCI_VOKSA jufra co minde la vitci voks."
 	echo
 	echo "TARGET:"
 	echo "  all     zbasu ro da"
-	echo "  mkfile  zbasu ro la'o gy. makefile gy."
 	echo "  espeak-ng"
 	echo "          zbasu ro da sepi'o la'o gy. eSpeak NG gy."
 	echo "  espeak-ng_jicmu-gismu"
 	echo "          zbasu ro tu'a lo jicmu gismu sepi'o la'o gy. eSpeak NG gy."
 	echo "  espeak-ng_cipra-gismu"
 	echo "          zbasu ro tu'a lo cipra gismu sepi'o la'o gy. eSpeak NG gy."
+	echo "  la-vitci-voksa"
+	echo "          zbasu ro da sepi'o la vitci voks."
+	echo "  la-vitci-voksa_jicmu-gismu"
+	echo "          zbasu ro tu'a lo jicmu gismu sepi'o la vitci voks."
+	echo "  la-vitci-voksa_cipra-gismu"
+	echo "          zbasu ro tu'a lo cipra gismu sepi'o la vitci voks."
 	echo "  list    zbasu lo liste"
 	echo "  clean   vimcu lo se zbasu"
 	echo "  rebuild ba lo nu zukte la'o gy. clean gy. cu zukte la'o gy. all gy."

@@ -49,6 +49,6 @@ WORKDIR ${WORKDIR}
 RUN \
 	apt-get update && \
 	apt-get install -y --no-install-recommends \
-		ca-certificates curl espeak-ng make xmlstarlet zip && \
+		ca-certificates curl espeak-ng jq make xmlstarlet zip && \
 	apt-get clean && \
 	rm -rf /var/lib/apt-get/lists/*
