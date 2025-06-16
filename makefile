@@ -14,12 +14,12 @@
 ##
 ##   id - 40bb79f8-5326-4164-83d3-496a50a44418
 ##   author - <qq542vev at https://purl.org/meta/me/>
-##   version - 1.0.0
+##   version - 2.0.0
 ##   created - 2025-06-08
-##   modified - 2025-06-13
+##   modified - 2025-06-15
 ##   copyright - Copyright (C) 2025-2025 qq542vev. All rights reserved.
 ##   license - <GNU GPLv3 at https://www.gnu.org/licenses/gpl-3.0.txt>
-##   depends - awk, curl, echo, espeak-ng, xmlstarlet zip
+##   depends - awk, curl, echo, espeak-ng, ffmpeg, jq, xmlstarlet zip
 ##
 ## See Also:
 ##
@@ -38,7 +38,7 @@
 # Macro
 # =====
 
-VERSION = 1.0.0
+VERSION = 2.0.0
 
 TYPE = jicmu-gismu cipra-gismu
 ESPEAK_TGT = $(TYPE:%=espeak-ng_%)
@@ -59,7 +59,7 @@ LA_VITCI_VOKSA = \
 	id=$$( \
 		curl \
 			-X 'POST' -H 'Content-Type: application/json' \
-			-d '{"data": ["$(@F:.wav=)", "Lojban", 0, 0, 1.5, "LJS", "wav"]}' \
+			-d '{"data": ["$(@F:.wav=)", "Lojban", 0, 0, 0, "Nix-Deterministic", "wav"]}' \
 			-- "$${url}" | \
 		jq -r '.event_id' \
 	) && \
@@ -68,7 +68,7 @@ LA_VITCI_VOKSA = \
 		awk -- 'match($$0, "^data: *") { print(substr($$0, RLENGTH + 1)); exit; }' | \
 		jq -r 'to_entries | .[1].value.url' \
 	) && \
-	curl -o "$(@)" -- "$${audio}"
+	curl -- "$${audio}" | ffmpeg -i - -filter:a 'atempo=0.65' -hide_banner -y -- '${@}'
 
 # Build
 # =====
