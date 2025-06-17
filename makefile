@@ -125,6 +125,12 @@ espeak-ng.zip: espeak-ng
 la-vitci-voksa.zip: la-vitci-voksa
 	zip -9FSro '$(@)' -- '$(<)'
 
+# Document
+# ========
+
+LICENSE.txt:
+	curl -sSfLo '$(@)' -- 'https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt'
+
 # Clean
 # =====
 
