@@ -1,6 +1,6 @@
 # la vitci voksa
 
-[cpacu ro lo se bacru vreji](https://github.com/qq542vev/jbovoha/releases/latest)
+[cpacu ro lo lojbo valsi voksa vreji](https://github.com/qq542vev/valvoha/releases/latest)
 
 ## jicmu gismu
 
