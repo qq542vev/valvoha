@@ -14,12 +14,12 @@
 ##
 ##   id - 40bb79f8-5326-4164-83d3-496a50a44418
 ##   author - <qq542vev at https://purl.org/meta/me/>
-##   version - 2.0.0
+##   version - 2.1.0
 ##   created - 2025-06-08
-##   modified - 2025-06-15
+##   modified - 2025-06-19
 ##   copyright - Copyright (C) 2025-2025 qq542vev. All rights reserved.
 ##   license - <GNU GPLv3 at https://www.gnu.org/licenses/gpl-3.0.txt>
-##   depends - awk, curl, echo, espeak-ng, ffmpeg, jq, xmlstarlet zip
+##   depends - awk, curl, echo, espeak-ng, ffmpeg, jq, tr, xmlstarlet, zip
 ##
 ## See Also:
 ##
@@ -31,7 +31,7 @@
 
 .POSIX:
 
-.PHONY: all espeak-ng $(ESPEAK_TGT) la-vitci-voksa $(VITVOHA_TGT) list release clean rebuild help version
+.PHONY: all espeak-ng $(ESPEAK_TGT) la-vitci-voksa $(VITVOHA_TGT) list release template-markdown clean rebuild help version
 
 .SILENT: help version
 
@@ -89,7 +89,7 @@ $(JICMU_GISMU:%=espeak-ng/jicmu-gismu/%.wav) $(CIPRA_GISMU:%=espeak-ng/cipra-gis
 	$(ESPEAK)
 
 # la vitci voksa
-# ------------------
+# --------------
 
 la-vitci-voksa: $(VITVOHA_TGT)
 
@@ -127,6 +127,32 @@ la-vitci-voksa.zip: la-vitci-voksa
 
 # Document
 # ========
+
+espeak-ng/index.md:
+	make title='eSpeak NG' dir='$(@D)' ext='.wav' out='$(@)' template-markdown
+
+la-vitci-voksa/index.md:
+	make title='la vitci voksa' dir='$(@D)' ext='.wav' out='$(@)' template-markdown
+
+template-markdown:
+	( \
+		echo "# $${title}"; \
+		echo; \
+		echo '[cpacu ro lo se bacru vreji](https://github.com/qq542vev/jbovoha/releases/latest)'; \
+		echo; \
+		for type in $(TYPE); do \
+			if [ -d "$${dir}/$${type}" ]; then \
+				echo "## $${type}" | tr -- '-' ' '; \
+				echo; \
+				while read -r word; do \
+					if [ -f "espeak-ng/$${type}/$${word}$${ext}" ]; then \
+						echo " * [$${word}]($${type}/$${word}$${ext})"; \
+					fi; \
+				done <"liste/$${type}.txt"; \
+				echo; \
+			fi; \
+		done; \
+	) >"$${out}"
 
 LICENSE.txt:
 	curl -sSfLo '$(@)' -- 'https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt'
