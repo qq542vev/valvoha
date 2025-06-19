@@ -31,14 +31,14 @@
 
 .POSIX:
 
-.PHONY: all espeak-ng $(ESPEAK_TGT) la-vitci-voksa $(VITVOHA_TGT) list release template-markdown clean rebuild help version
+.PHONY: all espeak-ng $(ESPEAK_TGT) la-vitci-voksa $(VITVOHA_TGT) list release docs template-markdown clean rebuild help version
 
 .SILENT: help version
 
 # Macro
 # =====
 
-VERSION = 2.0.0
+VERSION = 2.1.0
 
 TYPE = jicmu-gismu cipra-gismu
 ESPEAK_TGT = $(TYPE:%=espeak-ng_%)
@@ -128,11 +128,16 @@ la-vitci-voksa.zip: la-vitci-voksa
 # Document
 # ========
 
-espeak-ng/index.md:
-	make title='eSpeak NG' dir='$(@D)' ext='.wav' out='$(@)' template-markdown
+docs: LICENSE.txt espeak-ng/index.md la-vitci-voksa/index.md
 
-la-vitci-voksa/index.md:
-	make title='la vitci voksa' dir='$(@D)' ext='.wav' out='$(@)' template-markdown
+LICENSE.txt:
+	curl -sSfLo '$(@)' -- 'https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt'
+
+espeak-ng/index.md: espeak-ng
+	make -- title='eSpeak NG' dir='$(@D)' ext='.wav' out='$(@)' template-markdown
+
+la-vitci-voksa/index.md: la-vitci-voksa
+	make -- title='la vitci voksa' dir='$(@D)' ext='.wav' out='$(@)' template-markdown
 
 template-markdown:
 	( \
@@ -153,9 +158,6 @@ template-markdown:
 			fi; \
 		done; \
 	) >"$${out}"
-
-LICENSE.txt:
-	curl -sSfLo '$(@)' -- 'https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt'
 
 # Clean
 # =====
@@ -193,6 +195,8 @@ help:
 	echo "  la-vitci-voksa_cipra-gismu"
 	echo "          zbasu ro tu'a lo cipra gismu sepi'o la vitci voks."
 	echo "  list    zbasu lo liste"
+	echo "  release zbasu lo bakfu"
+	echo "  docs    zbasu lo jufra vreji"
 	echo "  clean   vimcu lo se zbasu"
 	echo "  rebuild ba lo nu zukte la'o gy. clean gy. cu zukte la'o gy. all gy."
 	echo "  help    jarco tu'a le sidju jufra"
