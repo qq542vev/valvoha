@@ -143,7 +143,7 @@ template-markdown:
 	( \
 		echo "# $${title}"; \
 		echo; \
-		echo '[cpacu ro lo viksa vreji](https://github.com/qq542vev/valvoha/releases/latest)'; \
+		echo '[cpacu ro lo lojbo valsi voksa vreji](https://github.com/qq542vev/valvoha/releases/latest)'; \
 		echo; \
 		for type in $(TYPE); do \
 			if [ -d "$${dir}/$${type}" ]; then \
