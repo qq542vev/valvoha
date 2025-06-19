@@ -1,6 +1,6 @@
 #!/usr/bin/docker-compose -f
 
-name: lojbo valsi voksa vreji
+name: valvoha
 services:
   make:
     build: .

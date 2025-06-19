@@ -12,23 +12,23 @@
 ##
 ##   id - 9bdd592d-0bec-48a6-8a15-b10f4d5151aa
 ##   author - <qq542vev at https://purl.org/meta/me/>
-##   version - 1.0.0
+##   version - 1.0.1
 ##   created - 2025-06-11
-##   modified - 2025-06-12
+##   modified - 2025-06-19
 ##   copyright - Copyright (C) 2025-2025 qq542vev. All rights reserved.
 ##   license - <GNU GPLv3 at https://www.gnu.org/licenses/gpl-3.0.txt>
 ##
 ## See Also:
 ##
-##   * <Project homepage at https://github.com/qq542vev/jbovoha>
-##   * <Bag report at https://github.com/qq542vev/jbovoha/issues>
+##   * <Project homepage at https://github.com/qq542vev/valvoha>
+##   * <Bag report at https://github.com/qq542vev/valvoha/issues>
 
 ARG BASE="docker.io/library/debian:12-slim"
 
 FROM ${BASE}
 
 ARG BASE
-ARG TITLE="lojbo valsi voksa vreji"
+ARG TITLE="valvo'a"
 ARG VERSION="1.0.0"
 ARG WORKDIR="/work"
 

@@ -1,6 +1,6 @@
 <!-- Document: README.md
 
-jufra co ciksi tu'a lo lojbo valsi voksa vreji
+jufra co ciksi tu'a lo valvo'a
 
 Metadata:
 
@@ -14,11 +14,11 @@ Metadata:
 
 See Also:
 
-   * <Project homepage at https://github.com/qq542vev/jbovoha>
-   * <Bag report at https://github.com/qq542vev/jbovoha/issues>
+   * <Project homepage at https://github.com/qq542vev/valvoha>
+   * <Bag report at https://github.com/qq542vev/valvoha/issues>
 -->
 
-# lojbo valsi voksa vreji
+# valvo'a
 
 ## ve ciksi
 
@@ -31,5 +31,5 @@ lo nu bacru cu masno ru'e tezu'e lo nu cilre fi la lojban.
 
 ## vreji liste
 
- * [eSpeak NG](https://qq542vev.github.io/jbovoha/espeak-ng/)
- * [la vitci voksa](https://qq542vev.github.io/jbovoha/la-vitci-voksa/)
+ * [eSpeak NG](https://qq542vev.github.io/valvoha/espeak-ng/)
+ * [la vitci voksa](https://qq542vev.github.io/valvoha/la-vitci-voksa/)
