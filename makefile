@@ -14,12 +14,13 @@
 ##
 ##   id - 40bb79f8-5326-4164-83d3-496a50a44418
 ##   author - <qq542vev at https://purl.org/meta/me/>
-##   version - 2.1.0
+##   version - 2.1.1
 ##   created - 2025-06-08
-##   modified - 2025-06-19
+##   modified - 2025-06-21
 ##   copyright - Copyright (C) 2025-2025 qq542vev. All rights reserved.
 ##   license - <GNU GPLv3 at https://www.gnu.org/licenses/gpl-3.0.txt>
 ##   depends - awk, curl, echo, espeak-ng, ffmpeg, jq, tr, xmlstarlet, zip
+##   conforms-to - <https://pubs.opengroup.org/onlinepubs/9799919799/utilities/make.html>
 ##
 ## See Also:
 ##
@@ -31,14 +32,14 @@
 
 .POSIX:
 
-.PHONY: all espeak-ng $(ESPEAK_TGT) la-vitci-voksa $(VITVOHA_TGT) list release docs template-markdown clean rebuild help version
+.PHONY: all espeak-ng $(ESPEAK_TGT) la-vitci-voksa $(VITVOHA_TGT) list release docs __gen-md-tmpl clean rebuild help version
 
 .SILENT: help version
 
 # Macro
 # =====
 
-VERSION = 2.1.0
+VERSION = 2.1.1
 
 TYPE = jicmu-gismu cipra-gismu
 ESPEAK_TGT = $(TYPE:%=espeak-ng_%)
@@ -134,30 +135,31 @@ LICENSE.txt:
 	curl -sSfLo '$(@)' -- 'https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt'
 
 espeak-ng/index.md: espeak-ng
-	make -- title='eSpeak NG' dir='$(@D)' ext='.wav' out='$(@)' template-markdown
+	$(MAKE) -s -- title='eSpeak NG' speaker='$(@D)' ext='.wav' __gen-md-tmpl >'$(@)'
 
 la-vitci-voksa/index.md: la-vitci-voksa
-	make -- title='la vitci voksa' dir='$(@D)' ext='.wav' out='$(@)' template-markdown
+	$(MAKE) -s -- title='la vitci voksa' speaker='$(@D)' ext='.wav' __gen-md-tmpl >'$(@)'
 
-template-markdown:
-	( \
+__gen-md-tmpl:
+	{ \
 		echo "# $${title}"; \
 		echo; \
 		echo '[cpacu ro lo lojbo valsi voksa vreji](https://github.com/qq542vev/valvoha/releases/latest)'; \
 		echo; \
 		for type in $(TYPE); do \
-			if [ -d "$${dir}/$${type}" ]; then \
+			dir="$${speaker}/$${type}"; \
+			if [ -d "$${dir}" ]; then \
 				echo "## $${type}" | tr -- '-' ' '; \
 				echo; \
 				while read -r word; do \
-					if [ -f "espeak-ng/$${type}/$${word}$${ext}" ]; then \
+					if [ -f "$${dir}/$${word}$${ext}" ]; then \
 						echo " * [$${word}]($${type}/$${word}$${ext})"; \
 					fi; \
 				done <"liste/$${type}.txt"; \
 				echo; \
 			fi; \
 		done; \
-	) >"$${out}"
+	}
 
 # Clean
 # =====
@@ -165,7 +167,8 @@ template-markdown:
 clean:
 	rm -rf -- $(SPEAKER) $(SPEAKER:=.zip)
 
-rebuild: clean all
+rebuild: clean
+	$(MAKE)
 
 # Message
 # =======
