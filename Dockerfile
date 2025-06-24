@@ -14,9 +14,10 @@
 ##   author - <qq542vev at https://purl.org/meta/me/>
 ##   version - 1.0.1
 ##   created - 2025-06-11
-##   modified - 2025-06-19
+##   modified - 2025-06-25
 ##   copyright - Copyright (C) 2025-2025 qq542vev. All rights reserved.
 ##   license - <GNU GPLv3 at https://www.gnu.org/licenses/gpl-3.0.txt>
+##   conforms-to - <https://docs.docker.com/reference/dockerfile/>
 ##
 ## See Also:
 ##
@@ -36,7 +37,7 @@ LABEL org.opencontainers.image.title="${TITLE}"
 LABEL org.opencontainers.image.description="${TITLE}のビルド・テスト用のイメージ。"
 LABEL org.opencontainers.image.authors="qq542vev <https://purl.org/meta/me/>"
 LABEL org.opencontainers.image.version="${VERSION}"
-LABEL org.opencontainers.image.url="https://github.com/qq542vev/voksa"
+LABEL org.opencontainers.image.url="https://github.com/qq542vev/valvoha"
 LABEL org.opencontainers.image.license="GPL-3.0-only"
 LABEL org.opencontainers.image.base.name="${BASE}"
 

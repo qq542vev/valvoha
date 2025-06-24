@@ -8,15 +8,15 @@ Metadata:
   author - <qq542vev at https://purl.org/meta/me/>
   version - 0.1.1
   created - 2025-06-16
-  modified - 2025-06-21
-  copyright - Copyright (C) 2022-2025 qq542vev. Some rights reserved.
+  modified - 2025-06-25
+  copyright - Copyright (C) 2025-2025 qq542vev. Some rights reserved.
   license - <CC-BY-4.0 at https://creativecommons.org/licenses/by/4.0/>
   conforms-to - <https://spec.commonmark.org/current/>
 
 See Also:
 
-   * <Project homepage at https://github.com/qq542vev/valvoha>
-   * <Bag report at https://github.com/qq542vev/valvoha/issues>
+  * <Project homepage at https://github.com/qq542vev/valvoha>
+  * <Bag report at https://github.com/qq542vev/valvoha/issues>
 -->
 
 # valvo'a
