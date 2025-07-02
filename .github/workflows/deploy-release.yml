@@ -1,0 +1,33 @@
+name: Deploy Release to Pages
+
+# release ブランチに push されたときに実行
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) リポジトリのチェックアウト + LFS の実ファイル取得
+      - name: Checkout repository (with LFS)
+        uses: actions/checkout@v3
+        with:
+          lfs: true             # ← ポインタを実ファイルに変換
+          submodules: false
+
+      # 2) 静的ファイルをまとめる（ここでは単にコピー例）
+      - name: Prepare public directory
+        run: |
+          mkdir public
+          cp -R espeak-ng espeak-ng public/
+
+      # 3) gh-pages ブランチへデプロイ
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN  }}
+          publish_branch: gh-pages
+          publish_dir: ./public
