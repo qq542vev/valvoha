@@ -1,5 +1,9 @@
 name: Deploy Release to Pages
 
+permissions:
+  contents: write   # リポジトリの内容（ブランチ）への書き込みを許可
+  pages: write      # GitHub Pages の API 更新が必要な場合
+
 # release ブランチに push されたときに実行
 on:
   push:
@@ -22,7 +26,7 @@ jobs:
       - name: Prepare public directory
         run: |
           mkdir public
-          cp -R espeak-ng espeak-ng public/
+          cp -R espeak-ng la-vitci-voksa public
 
       # 3) gh-pages ブランチへデプロイ
       - name: Deploy to GitHub Pages
@@ -31,3 +35,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN  }}
           publish_branch: gh-pages
           publish_dir: ./public
+          enable_jekyll: true
