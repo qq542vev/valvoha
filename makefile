@@ -69,7 +69,7 @@ LA_VITCI_VOKSA = \
 		awk -- 'match($$0, "^data: *") { print(substr($$0, RLENGTH + 1)); exit; }' | \
 		jq -r 'to_entries | .[1].value.url' \
 	) && \
-	curl -- "$${audio}" | ffmpeg -i - -filter:a 'atempo=0.65' -hide_banner -y -- '${@}'
+	curl -- "$${audio}" | ffmpeg -i - -filter:a 'atempo=0.65' -hide_banner -loglevel warning -y -- '${@}'
 
 # Build
 # =====
